@@ -20,13 +20,13 @@ namespace OnlineShop.Controllers
         // GET: Orders
         public async Task<IActionResult> Index()
         {
+            var average = _context.Orders.Include(o => o.Product).Include(o => o.Client);
+            foreach (Order o in average)
+            {
+                o.OrderSum = o.Quantity * o.Product.Price;   
+            }
 
-            var orders = _context.Orders
-                .Include(o => o.Client)
-                .Include(o => o.Product)
-                .AsNoTracking();
-
-            return View(await orders.ToListAsync());
+            return View(await _context.Orders.ToListAsync());
         }
 
         // GET: Orders/Details/5
