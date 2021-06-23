@@ -23,15 +23,20 @@ namespace OnlineShop.Controllers
             var average = _context.Clients.Include(c => c.Orders).ThenInclude(p => p.Product);
             decimal total_sum = 0;
             int total_quantity = 0;
+            int certain_client_order_quantity = 0;
+
             foreach (Client c in average)
             {
                 foreach (Order o in c.Orders)
                 {
+                    certain_client_order_quantity = 0;
+                    certain_client_order_quantity += o.Quantity;
+
                     total_sum += o.Product.Price * o.Quantity;
                     total_quantity += o.Quantity;
                 }
                 
-                if (total_quantity != 0)
+                if (c.Orders.Count != 0)
                 {
                     c.AverageOrderSum = (int)total_sum / total_quantity;
                 }
