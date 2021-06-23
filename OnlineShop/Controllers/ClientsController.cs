@@ -19,19 +19,21 @@ namespace OnlineShop.Controllers
         // GET: Clients
         public async Task<ActionResult> Index()
         {
+            //var orders = _context.Orders;
             var average = _context.Clients.Include(c => c.Orders).ThenInclude(p => p.Product);
+            decimal total_sum = 0;
+            int total_quantity = 0;
             foreach (Client c in average)
             {
-                decimal dec = 0;
                 foreach (Order o in c.Orders)
                 {
-                    dec += o.Product.Price;
-                    o.OrderSum = o.Quantity * o.Product.Price;
+                    total_sum += o.Product.Price * o.Quantity;
+                    total_quantity += o.Quantity;
                 }
                 
-                if (c.OrderCount > 0)
+                if (total_quantity != 0)
                 {
-                    c.AverageOrderSum = (int)(dec / c.OrderCount);
+                    c.AverageOrderSum = (int)total_sum / total_quantity;
                 }
                 else
                 {
