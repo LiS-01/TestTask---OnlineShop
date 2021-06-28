@@ -19,30 +19,21 @@ namespace OnlineShop.Controllers
         // GET: Clients
         public async Task<ActionResult> Index()
         {
-            //var orders = _context.Orders;
-            var average = _context.Clients.Include(c => c.Orders).ThenInclude(p => p.Product);
-            decimal total_sum = 0;
-            int total_quantity = 0;
+            var clients = from c in _context.Clients
+                          where c.Orders.Count > 0
+                          select new Client
+                          {
+                              ID = c.ID,
+                              Name = c.Name,
+                              Email = c.Email,
+                              Birthdate = c.Birthdate,
+                              Gender = c.Gender,
+                              OrderCount = c.Orders.Count,
+                              // Doesn't display customers who didn't make any order
+                              AverageOrderSum = (int)c.Orders.Sum(x => x.Product.Price * x.Quantity) / c.Orders.Count ,
+                          };
 
-            foreach (Client c in average)
-            {
-                foreach (Order o in c.Orders)
-                {
-                    total_sum += o.Product.Price * o.Quantity;
-                    total_quantity += o.Quantity;
-                }
-                
-                if (c.Orders.Count != 0)
-                {
-                    c.AverageOrderSum = (int)total_sum / total_quantity;
-                }
-                else
-                {
-                    c.AverageOrderSum = 0;
-                }
-            }
-
-            return View(await _context.Clients.ToListAsync());
+            return View(await clients.ToListAsync());
 
         }
 
