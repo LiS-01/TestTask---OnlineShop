@@ -22,11 +22,6 @@ namespace OnlineShop.Models
         public int ProductID { get; set; }
 
         [Required]
-        [StringLength(20)]
-        [Column("Product Title")]
-        public string ProductTitle { get; set; }
-
-        [Required]
         public int Quantity { get; set; }
 
         [Required]
