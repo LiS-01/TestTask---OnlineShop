@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,21 +21,23 @@ namespace OnlineShop.Controllers
         // GET: Clients
         public async Task<ActionResult> Index()
         {
-            var clients = from c in _context.Clients
-                          where c.Orders.Count > 0
-                          select new Client
-                          {
-                              ID = c.ID,
-                              Name = c.Name,
-                              Email = c.Email,
-                              Birthdate = c.Birthdate,
-                              Gender = c.Gender,
-                              OrderCount = c.Orders.Count,
-                              // Doesn't display customers who didn't make any order
-                              AverageOrderSum = (int)c.Orders.Sum(x => x.Product.Price * x.Quantity) / c.Orders.Count ,
-                          };
+            using (_context)
+            {
+                var clients = from c in _context.Clients
+                              select new Client
+                              {
+                                  ID = c.ID,
+                                  Name = c.Name,
+                                  Email = c.Email,
+                                  Birthdate = c.Birthdate,
+                                  Gender = c.Gender,
+                                  OrderCount = c.Orders.Count,
+                                  AverageOrderSum = (int)c.Orders.Sum(x => x.Product.Price * x.Quantity) / (c.Orders.Count == 0 ? 1 : c.Orders.Count),
+                              };
 
-            return View(await clients.ToListAsync());
+                return View(await clients.ToListAsync());
+            }
+            
 
         }
 

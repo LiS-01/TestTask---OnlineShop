@@ -20,20 +20,22 @@ namespace OnlineShop.Controllers
         // GET: Orders
         public async Task<IActionResult> Index()
         {
-            var orders = from o in _context.Orders
-                         select new Order
-                         {
-                             ID = o.ID, 
-                             ClientID = o.ClientID,
-                             Client = o.Client,
-                             ProductID = o.ProductID,
-                             Product = o.Product,
-                             Quantity = o.Quantity,
-                             Status = o.Status,
-                             OrderSum = o.Quantity * o.Product.Price,
-                             ProductTitle = o.ProductTitle,
-                         };
-            return View(await orders.ToListAsync());
+            using (_context)
+            {
+                var orders = from o in _context.Orders
+                             select new Order
+                             {
+                                 ID = o.ID,
+                                 ClientID = o.ClientID,
+                                 Client = o.Client,
+                                 ProductID = o.ProductID,
+                                 Product = o.Product,
+                                 Quantity = o.Quantity,
+                                 Status = o.Status,
+                                 OrderSum = o.Quantity * o.Product.Price,
+                             };
+                return View(await orders.ToListAsync());
+            }
         }
 
         // GET: Orders/Details/5
@@ -48,6 +50,7 @@ namespace OnlineShop.Controllers
                 .Include(o => o.Client)
                 .Include(o => o.Product)
                 .FirstOrDefaultAsync(m => m.ID == id);
+
             if (order == null)
             {
                 return NotFound();
@@ -129,7 +132,7 @@ namespace OnlineShop.Controllers
 
             if (await TryUpdateModelAsync<Order>(orderToUpdate,
                 "",
-                o => o.Client, o => o.ClientID, o => o.Product, o => o.ProductID, o => o.Quantity, o => o.Status, o => o.ProductTitle, o => o.OrderSum))
+                o => o.Client, o => o.ClientID, o => o.Product, o => o.ProductID, o => o.Quantity, o => o.Status, o => o.OrderSum))
             {
                 try
                 {

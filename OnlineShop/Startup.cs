@@ -23,13 +23,23 @@ namespace OnlineShop
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        /*public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ShopContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
+            services.AddControllersWithViews();
+        }*/
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            // получаем строку подключения из файла конфигурации
+            string connection = Configuration.GetConnectionString("DefaultConnection");
+            // добавляем контекст MobileContext в качестве сервиса в приложение
+            services.AddDbContext<ShopContext>(options =>
+                options.UseSqlServer(connection));
             services.AddControllersWithViews();
         }
 
